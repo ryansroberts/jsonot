@@ -10,5 +10,13 @@ namespace JsonOT
                 p = new[]{path},na = number
             });
         }
+
+        public static JObject StringInsert(string path,string toinsert, int offset)
+        {
+            return JObject.FromObject(new {
+                p = new []{path,offset.ToString()},
+                si = toinsert
+            });
+        }
     }
 }

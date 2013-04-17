@@ -11,16 +11,30 @@ namespace JsonOT.Test
 {
      public class OperationalTransformsHappy
      {
+        JObject Transform(JObject toTranform, JObject transform)
+        {
+            var tranny = new Transformer();
+            return tranny.Transform(toTranform, transform);
+        }
+
         [Fact]
         public void NumericAdditionAdds()
         {
-            var tranny = new Transformer();
-            var res = tranny.Transform(JObject.FromObject(new
+            Transform(JObject.FromObject(new
             {
                 somenumber = 1.0f
-            }), Transforms.AddToNumber("somenumber", 2));
-
-            res["somenumber"].Value<int>().ShouldEqual(3);
+            }), Transforms.AddToNumber("somenumber", 2))
+            ["somenumber"].Value<int>().ShouldEqual(3);
         }
+
+         [Fact]
+         public void StringInsertInserts()
+         {
+             Transform(JObject.FromObject(new
+             {
+                somestring = "lol"                                     
+             }),Transforms.StringInsert("somestring","lol",3))
+             ["somestring"].Value<string>().ShouldEqual("lollol");
+         }
      }
 }

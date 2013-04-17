@@ -41,27 +41,67 @@ namespace JsonOT
 
         static string Path(JObject transform)
         {
-            var p = transform.SelectToken("p") as JArray;
-
-            if (p == null || !p.Any())
-                throw new TransformException("Cannot locate valid path propery in transform");
+            var p = PathArray(transform);
 
             return p.First().Value<string>();
         }
 
+        static JArray PathArray(JObject transform)
+        {
+            var p = transform.SelectToken("p") as JArray;
+
+            if (p == null || !p.Any())
+                throw new TransformException("Cannot locate valid path propery in transform");
+            return p;
+        }
+
+        T1 PathParams<T1>(JObject transform)
+        {
+            var p = PathArray(transform);
+
+            if(p.Count != 2)
+                throw new TransformException("Incorrect number of parameters in path" + p);
+
+            return p.ElementAt(1).Value<T1>();
+        }
+        
+        T1 PayloadParams<T1>(JObject transform,string name)
+        {
+            return transform.SelectToken(name).Value<T1>();
+        }
+
+        
+
         JObject NumberAdd(JObject json, JObject transform)
         {
+            var toAdd = PayloadParams<double>(transform,"na");
             Path(transform)
                 .Maybe(p => json.SelectToken(p)
                     .Maybe(v => v.Replace(
-                        new JValue(v.Value<double>() + transform["na"].Value<double>()))));
+                        new JValue(v.Value<double>() + toAdd))));
 
             return transform;
+        }
+
+
+
+        JObject StringInsert(JObject json, JObject transform)
+        {
+            var offset = PathParams<int>(transform);
+            var toInsert = PayloadParams<string>(transform, "si");
+
+            Path(transform)
+                .Maybe(p => json.SelectToken(p)
+                    .Maybe(v => v.Replace(
+                        new JValue(v.Value<string>().Insert(offset,toInsert)))));
+
+            return json;
         }
 
         public Transformer()
         {
             dispatchMap["na"] = NumberAdd;
+            dispatchMap["si"] = StringInsert;
         }
 
 
