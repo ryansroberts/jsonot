@@ -98,10 +98,24 @@ namespace JsonOT
             return json;
         }
 
+        JObject StringDelete(JObject json, JObject transform)
+        {
+            var offset = PathParams<int>(transform);
+            var toDelete = PayloadParams<string>(transform, "sd");
+
+            Path(transform)
+                .Maybe(p => json.SelectToken(p)
+                    .Maybe(v => v.Replace(
+                        new JValue(v.Value<string>().Remove(offset, toDelete.Length)))));
+
+            return json;
+        }
+
         public Transformer()
         {
             dispatchMap["na"] = NumberAdd;
             dispatchMap["si"] = StringInsert;
+            dispatchMap["sd"] = StringDelete;
         }
 
 

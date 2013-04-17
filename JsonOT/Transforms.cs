@@ -18,5 +18,13 @@ namespace JsonOT
                 si = toinsert
             });
         }
+
+        public static JObject StringDelete(string path, string todelete, int offset)
+        {
+            return JObject.FromObject(new {
+                p = new[] { path, offset.ToString() },
+                sd = todelete
+            });
+        }
     }
 }
