@@ -56,5 +56,15 @@ namespace JsonOT.Test
              }), Transforms.ListInsert("root", 1 , new JValue(2)))
              ["root"][2].Value<int>().ShouldEqual(2);
          }
+
+         [Fact]
+         public void ListDeleteDeletes()
+         {
+             Transform(JObject.FromObject(new
+             {
+                 root = new[] { 1,2,3 }
+             }), Transforms.ListDelete("root", 1, new JValue(2)))
+             ["root"][1].Value<int>().ShouldEqual(3);
+         }
      }
 }

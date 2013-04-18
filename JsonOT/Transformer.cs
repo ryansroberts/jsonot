@@ -123,12 +123,25 @@ namespace JsonOT
             return json;
         }
 
+        JObject ListDelete(JObject json, JObject transform)
+        {
+            var index = PathParams<int>(transform);
+            var toDelete = PayloadParams<JToken>(transform, "ld");
+
+            Path(transform)
+                .Maybe(p => json.SelectToken(p)
+                    .Maybe(v => ((JArray)v)[index].Remove()));
+
+            return json;
+        }
+
         public Transformer()
         {
             dispatchMap["na"] = NumberAdd;
             dispatchMap["si"] = StringInsert;
             dispatchMap["sd"] = StringDelete;
             dispatchMap["li"] = ListInsert;
+            dispatchMap["ld"] = ListDelete;
         }
 
 

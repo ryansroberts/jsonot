@@ -34,5 +34,14 @@ namespace JsonOT
                 li = toInsert
             });
         }
+
+        public static JObject ListDelete(string path, int index, JToken toDelete)
+        {
+            return JObject.FromObject(new
+            {
+                p = new[] { path, index.ToString() },
+                ld = toDelete
+            });
+        }
     }
 }
