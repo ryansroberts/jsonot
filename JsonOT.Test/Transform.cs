@@ -46,5 +46,15 @@ namespace JsonOT.Test
              }), Transforms.StringDelete("somestring", "lol", 3))
              ["somestring"].Value<string>().ShouldEqual("lol");
          }
+
+         [Fact]
+         public void ListInsertInserts()
+         {
+             Transform(JObject.FromObject(new
+             {
+                 root = new []{1,3}
+             }), Transforms.ListInsert("root", 1 , new JValue(2)))
+             ["root"][2].Value<int>().ShouldEqual(2);
+         }
      }
 }

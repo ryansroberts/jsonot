@@ -26,5 +26,13 @@ namespace JsonOT
                 sd = todelete
             });
         }
+
+        public static JObject ListInsert(string path, int index, JToken toInsert)
+        {
+            return JObject.FromObject(new {
+                p = new[] {path,index.ToString()},
+                li = toInsert
+            });
+        }
     }
 }

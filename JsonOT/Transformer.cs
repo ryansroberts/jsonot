@@ -111,11 +111,24 @@ namespace JsonOT
             return json;
         }
 
+        JObject ListInsert(JObject json, JObject transform)
+        {
+            var index = PathParams<int>(transform);
+            var toInsert = PayloadParams<JToken>(transform, "li");
+
+            Path(transform)
+                .Maybe(p => json.SelectToken(p)
+                    .Maybe(v => ((JArray)v)[index].AddAfterSelf(toInsert)));
+
+            return json;
+        }
+
         public Transformer()
         {
             dispatchMap["na"] = NumberAdd;
             dispatchMap["si"] = StringInsert;
             dispatchMap["sd"] = StringDelete;
+            dispatchMap["li"] = ListInsert;
         }
 
 
