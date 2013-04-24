@@ -66,5 +66,37 @@ namespace JsonOT.Test
              }), Transforms.ListDelete("root", 1, new JValue(2)))
              ["root"][1].Value<int>().ShouldEqual(3);
          }
+
+
+         [Fact]
+         public void ListReplaceReplaces()
+         {
+             Transform(JObject.FromObject(new
+             {
+                 root = new[] { 1, 99, 3 }
+             }), Transforms.ListReplace("root", 1,new JValue(99),new JValue(2)))
+             ["root"][1].Value<int>().ShouldEqual(2);
+         }
+
+         [Fact]
+         public void ListMoveMoves()
+         {
+             Transform(JObject.FromObject(new
+             {
+                 root = new[] { 1, 3, 2 }
+             }), Transforms.ListMove("root", 2, 1))
+             ["root"][1].Value<int>().ShouldEqual(2);
+         }
+
+
+         [Fact]
+         public void ObjectInsertInserts()
+         {
+             Transform(JObject.FromObject(new
+             {
+                 root = new {}
+             }), Transforms.ObjectInsert("root", "lol",new JValue("lol")))
+            ["root"]["lol"].Value<string>().ShouldEqual("lol");
+         }
      }
 }

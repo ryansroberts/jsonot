@@ -70,6 +70,13 @@ namespace JsonOT
             return transform.SelectToken(name).Value<T1>();
         }
 
+        Tuple<T1,T2> PayloadParams<T1,T2>(JObject transform, string p1,string p2)
+        {
+            return new Tuple<T1, T2>(
+                transform.SelectToken(p1).Value<T1>(),
+                transform.SelectToken(p2).Value<T2>());
+        }
+
         
 
         JObject NumberAdd(JObject json, JObject transform)
@@ -135,6 +142,42 @@ namespace JsonOT
             return json;
         }
 
+        JObject ListReplace(JObject json, JObject transform)
+        {
+            var index = PathParams<int>(transform);
+            var replaceParams = PayloadParams<JToken,JToken>(transform, "ld","li");
+
+            Path(transform)
+                .Maybe(p => json.SelectToken(p)
+                    .Maybe(v => ((JArray)v)[index].Replace(replaceParams.Item2)));
+
+            return json;
+        }
+
+        JObject ListMove(JObject json, JObject transform)
+        {
+            var index = PathParams<int>(transform);
+            var toIndex = PayloadParams<int>(transform, "lm");
+
+            Path(transform)
+                .Maybe(p => json.SelectToken(p)
+                    .Maybe(v => ((JArray) v)[toIndex].AddBeforeSelf(((JArray) v)[index])));
+
+            return json;
+        }
+
+        JObject ObjectInsert(JObject json, JObject transform)
+        {
+            var propertyName = PathParams<string>(transform);
+            var toInsert = PayloadParams<JToken>(transform, "oi");
+
+            Path(transform)
+                .Maybe(p => json.SelectToken(p)
+                    .Maybe(v => (v[propertyName] = toInsert)));
+
+            return json;
+        }
+
         public Transformer()
         {
             dispatchMap["na"] = NumberAdd;
@@ -142,19 +185,28 @@ namespace JsonOT
             dispatchMap["sd"] = StringDelete;
             dispatchMap["li"] = ListInsert;
             dispatchMap["ld"] = ListDelete;
+            dispatchMap["ldli"] = ListReplace;
+            dispatchMap["lm"] = ListMove;
+            dispatchMap["oi"] = ObjectInsert;
         }
 
 
         public JObject Transform(JObject json, JObject transform)
         {
-            var opCode = (transform.Properties().ElementAtOrDefault(1) ?? new JProperty("",null)).Name;
+            var opCode = OpCode(transform);
             Func<JObject, JObject, JObject> op;
             if (dispatchMap.TryGetValue(opCode, out op))
                 op(json, transform); 
             return json;
         }
 
+        static string OpCode(JObject transform)
+        {
+            return string.Join("", transform.Properties()
+                                            .Where(p => p.Name != "p")
+                                            .Select(p => p.Name).ToArray());
 
+        }
     }
 
 }

@@ -43,5 +43,32 @@ namespace JsonOT
                 ld = toDelete
             });
         }
+
+        public static JObject ListReplace(string path, int index, JValue toReplace, JValue replaceWith)
+        {
+            return JObject.FromObject(new
+            {
+                p = new[] { path, index.ToString()},
+                ld = toReplace,
+                li = replaceWith
+            });
+        }
+
+        public static JObject ListMove(string path, int fromIndex, int toIndex)
+        {
+            return JObject.FromObject(new
+            {
+                p = new[] { path, fromIndex.ToString() },
+                lm = toIndex
+            });
+        }
+
+        public static JObject ObjectInsert(string path, string key, JToken toInsert)
+        {
+            return JObject.FromObject(new {
+                 p = new[] {path,key},
+                 oi = toInsert            
+            });
+        }
     }
 }
