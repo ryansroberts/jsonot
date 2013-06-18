@@ -165,6 +165,17 @@ namespace JsonOT
 
             return json;
         }
+        
+        JObject ObjectDelete(JObject json, JObject transform)
+        {
+            var toDelete = PayloadParams<JToken>(transform,"od");
+
+            Path(transform)
+                .Maybe(p => json.SelectToken(p)
+                    .Maybe(v =>  v.Parent.Remove()));
+
+            return json;
+        }
 
         JObject ObjectInsert(JObject json, JObject transform)
         {
@@ -174,6 +185,20 @@ namespace JsonOT
             Path(transform)
                 .Maybe(p => json.SelectToken(p)
                     .Maybe(v => (v[propertyName] = toInsert)));
+
+            return json;
+        }
+
+        JObject ObjectReplace(JObject json, JObject transform)
+        {
+            var replaceParams = PayloadParams<JToken, JToken>(transform, "od", "oi");
+
+
+            Path(transform)
+                .Maybe(t => json.SelectToken(t)
+                    .Maybe(p => p.Values().FirstOrDefault(v => JToken.DeepEquals(v,replaceParams.Item1))
+                        .Maybe(o => o.Replace(replaceParams.Item2))));
+
 
             return json;
         }
@@ -188,6 +213,8 @@ namespace JsonOT
             dispatchMap["ldli"] = ListReplace;
             dispatchMap["lm"] = ListMove;
             dispatchMap["oi"] = ObjectInsert;
+            dispatchMap["od"] = ObjectDelete;
+            dispatchMap["odoi"] = ObjectReplace;
         }
 
 

@@ -98,5 +98,28 @@ namespace JsonOT.Test
              }), Transforms.ObjectInsert("root", "lol",new JValue("lol")))
             ["root"]["lol"].Value<string>().ShouldEqual("lol");
          }
+
+         [Fact]
+         public void ObjectDeleteDeletes()
+         {
+             Transform(JObject.FromObject(new
+             {
+                 root = new { lol = "lol" }
+             }), Transforms.ObjectDelete("root.lol", JObject.FromObject(new { lol = "lol" })))
+             ["root"].Values().ShouldBeEmpty();
+         }
+
+         [Fact]
+         public void ObjectReplaceReplaces()
+         {
+             Transform(JObject.FromObject(new
+             {
+                 root = new { lol = "lol" }
+             }), Transforms.ObjectReplace("root",
+                    JToken.FromObject("lol") , 
+                    JToken.FromObject(":(")))
+             ["root"].Value<string>("lol").ShouldEqual(":(");
+         }
+
      }
 }

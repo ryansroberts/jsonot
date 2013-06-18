@@ -70,5 +70,22 @@ namespace JsonOT
                  oi = toInsert            
             });
         }
+
+        public static JObject ObjectDelete(string path, JToken obj)
+        {
+            return JObject.FromObject(new {
+                p = new []{path},
+                od = obj
+            });
+        }
+
+        public static JObject ObjectReplace(string path, JToken toreplace, JToken replaceWith)
+        {
+            return JObject.FromObject(new {
+                p = new [] {path},
+                od = toreplace,
+                oi = replaceWith
+            });
+        }
     }
 }
